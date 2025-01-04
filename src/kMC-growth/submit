@@ -1,0 +1,14 @@
+#! /bin/bash
+traj_id=$1
+prevstep=0
+nsteps=8
+
+for ((step=$prevstep+1; step<$nsteps; step+=1)); do
+    if [[ -z $jobid ]]; then
+        jobid=`sbatch slurm.sh $traj_id | cut -d ' ' -f 4`
+    else
+        jobid=`sbatch --dependency=afterany:$jobid slurm.sh $traj_id | cut -d ' ' -f 4`
+        echo "step: $step  jobid: $jobid"
+    fi
+    echo "Submitted step $step : jobid = $jobid"
+done
